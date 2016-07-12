@@ -1,0 +1,71 @@
+//group 'com.newrelic.agent.java.busy.work'
+
+apply plugin: 'eclipse'
+apply plugin: 'cpp'
+
+repositories {
+    mavenCentral()
+}
+
+//startScripts.mainClassName ""
+
+def OS = "Unknown";
+if (System.properties['os.name'].equals('Mac OS X')) {
+    OS = 'OSX'
+} else {
+    OS = 'Linux'
+}
+
+def javaHome = System.properties['java.home']+"/.."
+//def javaHome = System.envenv['JAVA_HOME']
+
+println "Building on OS: " + System.properties['os.name']
+//println "JAVA_HOME=${javaHome}"
+
+model {
+    components {
+        nativeAgent(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDir "src/compiler/cpp"
+                        include "**/*.cpp"
+                    }
+                    exportedHeaders {
+                        srcDir "src/compiler/headers"
+                    }
+                }
+            }
+        }
+
+        main(NativeExecutableSpec) {
+            sources {
+                cpp {
+                    lib library: "nativeAgent"
+                    source {
+                        srcDir "src/main/cpp"
+                        include "**/*.cpp"
+                    }
+                    exportedHeaders {
+                        srcDir "src/main/headers"
+                    }
+                }
+            }
+        }
+    }
+    binaries {
+       all {
+             cppCompiler.args "-std=c++11"
+	     }
+	     }
+}
+
+
+
+//binaries.withType(NativeBinary) {
+//    cppCompiler.args "-I", "${javaHome}/include"
+//    if (OS == 'OSX') {
+//        cppCompiler.args "-I", "${javaHome}/include/darwin"
+//    }
+//}
+
