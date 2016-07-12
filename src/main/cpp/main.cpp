@@ -17,13 +17,13 @@ int main(int argc, char** argv) {
 
 	// i2: Matrix c = a + 5;
 	LocalVariable *c = new LocalVariable(2);
-	Instruction *i2 = new Move(c , new Add(a, new Constant(new Integer(5))));
+	Instruction *i2 = new Move(c, new Add(a, new Constant(new Integer(5))));
 
 	b->link(i2);
 
 	// i3: Matrix d = b + a;
 	LocalVariable *d = new LocalVariable(3);
-	Instruction *i3 = new Move( d, new Add(b, a));
+	Instruction *i3 = new Move(d, new Add(b, a));
 
 	i2->link(i3);
 
@@ -37,58 +37,57 @@ int main(int argc, char** argv) {
 	LocalVariable *t1 = new LocalVariable(4);
 	Instruction *i5a = new Move(t1, new Add(a, a));
 
-    i4->link(t1)->link(i5a);
+	i4->link(t1)->link(i5a);
 
-    Instruction *i5b = new Move(b, new Add(t1, d));
-    i5a->link(i5b);
+	Instruction *i5b = new Move(b, new Add(t1, d));
+	i5a->link(i5b);
 
 	// i6: a = b + 20;
-    Instruction *i6 = new Move(a, new Add(b, new Constant(new Integer(20))));
-    i5b->link(i6);
+	Instruction *i6 = new Move(a, new Add(b, new Constant(new Integer(20))));
+	i5b->link(i6);
 
 	// i7: d = (b + c) * 1;
-    LocalVariable *t2 = new LocalVariable(5);
-    Instruction *i7a = new Move(t2, new Add(b, c));
+	LocalVariable *t2 = new LocalVariable(5);
+	Instruction *i7a = new Move(t2, new Add(b, c));
 
-    i6->link(t2)->link(i7a);
-    Instruction *i7b = new Move(d, new Mul(t2, new Constant(new Integer(1))));
+	i6->link(t2)->link(i7a);
+	Instruction *i7b = new Move(d, new Mul(t2, new Constant(new Integer(1))));
 
-    i7a->link(i7b);
+	i7a->link(i7b);
 
 	// i8: a = b + 20;
-    Instruction *i8 = new Move(a, new Add(b, new Constant(new Integer(20))));
-    i7b->link(i8);
+	Instruction *i8 = new Move(a, new Add(b, new Constant(new Integer(20))));
+	i7b->link(i8);
 
 	// i9: d = (b + c) * 2;
-    LocalVariable *t3 = new LocalVariable(6);
-    Instruction *i9a = new Move(t3, new Add(b, c));
+	LocalVariable *t3 = new LocalVariable(6);
+	Instruction *i9a = new Move(t3, new Add(b, c));
 
-    i8->link(t3)->link(i9a);
-    Instruction *i9b = new Move(d, new Mul(t3, new Constant(new Integer(2))));
+	i8->link(t3)->link(i9a);
+	Instruction *i9b = new Move(d, new Mul(t3, new Constant(new Integer(2))));
 
-    i9a->link(i9b);
+	i9a->link(i9b);
 
-    // i10: Matrix e = a + b + c + d
-    LocalVariable *e = new LocalVariable(9);
-    LocalVariable *t4 = new LocalVariable(7);
-    LocalVariable *t5 = new LocalVariable(8);
-    Instruction *i10a = new Move(t4, new Add(a, b));
-    i9b->link(e)->link(t4)->link(t5)->link(i10a);
+	// i10: Matrix e = a + b + c + d
+	LocalVariable *e = new LocalVariable(9);
+	LocalVariable *t4 = new LocalVariable(7);
+	LocalVariable *t5 = new LocalVariable(8);
+	Instruction *i10a = new Move(t4, new Add(a, b));
+	i9b->link(e)->link(t4)->link(t5)->link(i10a);
 
-    Instruction *i10b = new Move(t5, new Add(t4, c));
-    Instruction *i10c = new Move(e, new Add(t5, d));
-    i10a->link(i10b)->link(i10c);
+	Instruction *i10b = new Move(t5, new Add(t4, c));
+	Instruction *i10c = new Move(e, new Add(t5, d));
+	i10a->link(i10b)->link(i10c);
 
-    BasicBlock *codeSnippetBasicBlock = new BasicBlock(a, i10c);
+	BasicBlock *codeSnippetBasicBlock = new BasicBlock(a, i10c);
 
-    Instruction *instructionIter = codeSnippetBasicBlock->getFirst();
+	Instruction *instructionIter = codeSnippetBasicBlock->getFirst();
 
-    while (instructionIter != 0) {
-    	instructionIter->print();
-    	cout << "\n";
-    	instructionIter = instructionIter->getNext();
-    }
+	while (instructionIter != 0) {
+		instructionIter->print();
+		cout << "\n";
+		instructionIter = instructionIter->getNext();
+	}
 
-
-    // i11: return 0;
+	// i11: return 0;
 }
