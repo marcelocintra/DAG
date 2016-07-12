@@ -7,7 +7,7 @@ using namespace std;
 int OperatorVertex::hashCode() const {
 	int hash = op;
 	for(Vertex *i : successors) {
-		hash ^= (i->hashCode() << 8);
+		hash ^= ((hash >> 4) ^ (i->hashCode() << 8));
 	}
 	return hash;
 }

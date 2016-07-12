@@ -9,7 +9,7 @@ using namespace std;
 // These are the operators for our instruction set
 // I'm only defining what I need for the code exercise
 typedef enum {
-	ADD, MULTIPLY, ASSIGNMENT, PRINT, CALL, RETURN
+	ADD, MUL, ASSIGNMENT, PRINT, CALL, RETURN
 } Operator;
 
 // define the data types
@@ -22,8 +22,10 @@ typedef enum {
 //  I'll leave it for now.
 class Value {
 public:
-	virtual int valueNumber() {
-		return 0;
+	virtual int valueNumber() const = 0;
+
+	bool operator==(const Value &other) const {
+		return valueNumber() == other.valueNumber();
 	}
 };
 
@@ -33,7 +35,7 @@ public:
 			value(v) {
 	}
 
-	virtual int valueNumber() {
+	virtual int valueNumber() const {
 		return value;
 	}
 
@@ -56,13 +58,12 @@ public:
 	Instruction(Value *v, Instruction *p, Instruction *n) :
 			value(v), previous(p), next(n), substitute(0) {
 	}
-	// Instruction(): value (0), previous(0), next(0), substitute(0) {}
 
 	Value *getValue() {
 		return value;
 	}
 
-	// Check if the instruction has a substitute */
+	// Check if the instruction has a substitute
 	Instruction * resolve();
 
 	// Replace the value of this instruction with other
@@ -91,34 +92,35 @@ public:
 	}
 
 	// virtual functions for instruction and operand visitors
-	virtual void print() {
-	}
-	virtual void accept(InstructionVisitor &v) {
-	}
-	;
-	virtual void visitOperands(OperandVisitor &v) {
-	}
-	;
+	virtual void print() = 0;
+	virtual void accept(InstructionVisitor &v) = 0;
+	virtual void visitOperands(OperandVisitor &v) = 0;
 	virtual int hashCode() const = 0 ;
 };
 
 class BinaryInstruction: public Instruction {
 protected:
+	Operator op;
 	Instruction *operand0;
 	Instruction *operand1;
 
 public:
-	BinaryInstruction(Value *value, Instruction *oper0, Instruction *oper1) :
-			operand0(oper0), operand1(oper1), Instruction(value, 0, 0) {
+	BinaryInstruction(Operator opr, Value *value, Instruction *oper0, Instruction *oper1) :
+			op(opr), operand0(oper0), operand1(oper1), Instruction(value, 0, 0) {
 	}
 
 	Instruction * getOperand0() {
 		return operand0->resolve();
 	}
 
+	bool operator==(const BinaryInstruction &other) const {
+		return operand0 == other.operand0 &&
+				operand1 == other.operand1 &&
+				op == other.op;
+	}
+
 	void setOperand0(Instruction *operand) {
 		this->operand0 = operand;
-		;
 	}
 
 	Instruction * getOperand1() {
@@ -127,7 +129,6 @@ public:
 
 	void setOperand1(Instruction *operand) {
 		this->operand1 = operand;
-		;
 	}
 
 	void swapOperands() {
@@ -142,13 +143,16 @@ public:
 
 // Defining only the two Binary instructions used in the code snippet
 class Add: public BinaryInstruction {
+private:
+
+
 public:
 	Add(Value *value, Instruction *operand0, Instruction *operand1) :
-			BinaryInstruction(value, operand0, operand1) {
+			BinaryInstruction(ADD, value, operand0, operand1) {
 	}
 
 	Add(Instruction *operand0, Instruction *operand1) :
-			BinaryInstruction(0, operand0, operand1) {
+			BinaryInstruction(ADD, 0, operand0, operand1) {
 	}
 
 	virtual void accept(InstructionVisitor &v);
@@ -160,13 +164,15 @@ public:
 };
 
 class Mul: public BinaryInstruction {
+private:
+	Operator op;
 public:
 	Mul(Value *value, Instruction *operand0, Instruction *operand1) :
-			BinaryInstruction(value, operand0, operand1) {
+			BinaryInstruction(MUL, value, operand0, operand1) {
 	}
 
 	Mul(Instruction *operand0, Instruction *operand1) :
-			BinaryInstruction(0, operand0, operand1) {
+			BinaryInstruction(MUL, 0, operand0, operand1) {
 	}
 
 	virtual void accept(InstructionVisitor &v);
@@ -186,6 +192,10 @@ public:
 
 	int valueNumber() {
 		return getValue()->valueNumber();
+	}
+
+	bool operator==(const Constant &other) const {
+		return value == other.value;
 	}
 
 	virtual void visitOperands(OperandVisitor &v);
@@ -211,6 +221,10 @@ public:
 	LocalVariable(int slotNumber, Value *value) :
 			Instruction(value, 0, 0) {
 		this->slotNumber = slotNumber;
+	}
+
+	bool operator==(const LocalVariable &other) const {
+		return value == other.value;
 	}
 
 	virtual void accept(InstructionVisitor &v);
@@ -248,6 +262,11 @@ public:
 
 	void setVariable(LocalVariable *var) {
 		variable = var;
+	}
+
+	bool operator==(const Move &other) const {
+		return rightValue == other.rightValue &&
+				variable == other.variable;
 	}
 
 	virtual void visitOperands(OperandVisitor &v);
@@ -302,6 +321,25 @@ public:
 	void visitOperand(Instruction &operand) {
 	}
 };
+
+// define how to hash a Instruction object
+namespace std {
+
+  template <>
+  struct hash<Instruction>
+  {
+    std::size_t operator()(const Instruction& i) const
+    {
+      using std::size_t;
+      using std::hash;
+
+      // uses hashCode()
+
+      return ((hash<int>()(i.hashCode())));
+    }
+  };
+
+}
 
 
 #endif

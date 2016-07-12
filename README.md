@@ -73,5 +73,9 @@ int main
 }
 
 
+Here are the next steps:
+
+1) Finish the algorithm to build the DAG. I have almost everything needed. The idea is to create a Map from a three-address operation to its correspondent node in
+
 
 

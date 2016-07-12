@@ -46,7 +46,22 @@ public:
 	void print() {
 		cout << "OperatorVertex:" << op;
 	}
-	virtual int hashCode () const;
+	virtual int hashCode() const;
+	bool operator==(const OperatorVertex &other) const {
+		if (op == other.op) {
+
+			if (successors.size() != other.successors.size())
+				return false;
+
+			for(Vertex *i : successors) {
+				if (find(other.successors.begin(), other.successors.end(), i) == other.successors.end()) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 };
 
 // Defines a DAG leaf vertex
@@ -62,8 +77,13 @@ public:
 		leaf->print();
 	}
 	virtual int hashCode () const;
+
+	bool operator==(const LeafVertex &other) const {
+		return (leaf == other.leaf);
+	}
 };
 
+// defines how to hash a Vertex object
 namespace std {
 
   template <>
@@ -73,7 +93,6 @@ namespace std {
     {
       using std::size_t;
       using std::hash;
-      using std::string;
 
       // uses hashCode()
 

@@ -18,7 +18,7 @@ void BinaryInstruction::visitOperands(OperandVisitor &v) {
 }
 
 int BinaryInstruction::hashCode() const {
-	return (operand0->hashCode() >> 16) ^ (operand1->hashCode() << 16) ;
+	return ((op << 4) ^ (operand0->hashCode() >> 16) ^ (operand1->hashCode() << 16));
 }
 
 void Add::accept(InstructionVisitor &v) {
