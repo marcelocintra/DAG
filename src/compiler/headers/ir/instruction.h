@@ -322,7 +322,7 @@ public:
 	}
 };
 
-// define how to hash a Instruction object
+// defines how to hash a Instruction object
 namespace std {
 
   template <>
@@ -334,7 +334,6 @@ namespace std {
       using std::hash;
 
       // uses hashCode()
-
       return ((hash<int>()(i.hashCode())));
     }
   };
