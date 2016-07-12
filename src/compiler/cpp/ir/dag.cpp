@@ -4,8 +4,21 @@
 
 using namespace std;
 
+int OperatorVertex::hashCode() const {
+	int hash = op;
+	for(Vertex *i : successors) {
+		hash ^= (i->hashCode() << 8);
+	}
+	return hash;
+}
+
+int LeafVertex::hashCode() const {
+	return leaf->hashCode();
+}
+
+// Add edge u->v to the DAG
 void DAG::addEdge(Vertex* u, Vertex* v) {
-	vertices.push_back(v);  // Add edge u->v
+	vertices.push_back(v);
 	vertices.push_back(u);
 	u->addSuccessor(v);
 	v->addPredecessor(u);

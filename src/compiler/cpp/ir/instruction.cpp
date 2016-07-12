@@ -17,6 +17,10 @@ void BinaryInstruction::visitOperands(OperandVisitor &v) {
 	v.visitOperand(*operand1);
 }
 
+int BinaryInstruction::hashCode() const {
+	return (operand0->hashCode() >> 16) ^ (operand1->hashCode() << 16) ;
+}
+
 void Add::accept(InstructionVisitor &v) {
 	v.visit(*this);
 }
@@ -27,6 +31,10 @@ void Mul::accept(InstructionVisitor &v) {
 
 void Constant::visitOperands(OperandVisitor &v) {
 	v.visitOperand(*this);
+}
+
+int Constant::hashCode() const {
+	return value->valueNumber();
 }
 
 void Constant::accept(InstructionVisitor &v) {
@@ -41,6 +49,10 @@ void LocalVariable::visitOperands(OperandVisitor &v) {
 	v.visitOperand(*this);
 }
 
+int LocalVariable::hashCode() const {
+	return slotNumber;
+}
+
 void Move::visitOperands(OperandVisitor &v) {
 	v.visitOperand(*rightValue);
 	v.visitOperand(*variable);
@@ -48,4 +60,8 @@ void Move::visitOperands(OperandVisitor &v) {
 
 void Move::accept(InstructionVisitor &v) {
 	v.visit(*this);
+}
+
+int Move::hashCode() const {
+	return (rightValue->hashCode() >> 16) ^ (variable->hashCode() << 16) ;
 }

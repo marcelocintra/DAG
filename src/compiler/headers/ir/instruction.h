@@ -99,6 +99,7 @@ public:
 	virtual void visitOperands(OperandVisitor &v) {
 	}
 	;
+	virtual int hashCode() const = 0 ;
 };
 
 class BinaryInstruction: public Instruction {
@@ -136,6 +137,7 @@ public:
 	}
 
 	virtual void visitOperands(OperandVisitor &v);
+	virtual int hashCode() const;
 };
 
 // Defining only the two Binary instructions used in the code snippet
@@ -188,6 +190,7 @@ public:
 
 	virtual void visitOperands(OperandVisitor &v);
 	virtual void accept(InstructionVisitor &v);
+	virtual int hashCode() const;
 	virtual void print() {
 		cout << " CONSTANT " << value->valueNumber() << " ";
 	}
@@ -212,6 +215,7 @@ public:
 
 	virtual void accept(InstructionVisitor &v);
 	virtual void visitOperands(OperandVisitor &v);
+	virtual int hashCode() const;
 	virtual void print() {
 		cout << " v" << slotNumber << " ";
 	}
@@ -248,6 +252,7 @@ public:
 
 	virtual void visitOperands(OperandVisitor &v);
 	virtual void accept(InstructionVisitor &v);
+	virtual int hashCode() const;
 	virtual void print() {
 		variable->print();
 		cout << " <- ";

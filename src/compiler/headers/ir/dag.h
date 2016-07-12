@@ -27,11 +27,14 @@ public:
 		successors.push_back(succ);
 	}
 
+	virtual int hashCode () const = 0;
+
 protected:
 	vector<Vertex *> predecessors;
 	vector<Vertex *> successors;
 };
 
+// Defines a DAG non-leaf vertex
 class OperatorVertex: public Vertex {
 private:
 	Operator op;
@@ -43,8 +46,10 @@ public:
 	void print() {
 		cout << "OperatorVertex:" << op;
 	}
+	virtual int hashCode () const;
 };
 
+// Defines a DAG leaf vertex
 class LeafVertex: public Vertex {
 private:
 	Instruction *leaf;
@@ -56,14 +61,35 @@ public:
 		cout << "DAG Leaf: ";
 		leaf->print();
 	}
+	virtual int hashCode () const;
 };
 
-// Direct Acyclic Graph (DAG) definition
+namespace std {
+
+  template <>
+  struct hash<Vertex>
+  {
+    std::size_t operator()(const Vertex& k) const
+    {
+      using std::size_t;
+      using std::hash;
+      using std::string;
+
+      // uses hashCode()
+
+      return ((hash<int>()(k.hashCode())));
+    }
+  };
+
+}
+
+// Defines a Direct Acyclic Graph (DAG) definition
 class DAG {
 public:
 	template<typename T>
 	using VertexMap = unordered_map<Vertex*, T>;
 	using AdjacencyList = vector<Vertex*>;
+	using TemporaryMap = unordered_map<LocalVariable*, Vertex *>;
 
 	void addEdge(Vertex* u, Vertex* v);
 	VertexMap<int> indegrees() const;
