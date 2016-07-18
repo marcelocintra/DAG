@@ -34,7 +34,7 @@ public:
 	//                    operator for interior nodes
     Operator getLabel () { return label; }
 
-	virtual void print() = 0;
+	virtual void print() const = 0;
 
 protected:
 	vector<Node *>  predecessors;
@@ -44,28 +44,7 @@ protected:
 	//                 an operator for interior nodes
 	Operator          label;
 
-	void printLabel() {
-		switch (label) {
-		case CONSTANT:
-			cout << "CONSTANT";
-			break;
-		case LOCALVARIABLE:
-			cout << "LOCALVARIABLE";
-			break;
-		case MUL:
-			cout << "MUL";
-			break;
-		case ADD:
-			cout << "ADD";
-			break;
-		case MOVE:
-			cout << "MOVE";
-			break;
-		default:
-			cout << "INVALID";
-			break;
-		}
-	}
+	void printLabel() const;
 };
 
 // Defines a DAG non-leaf Node
@@ -81,58 +60,17 @@ public:
 		right->addPredecessor(this);
 	}
 
-	virtual void print() {
-		cout << "OperatorNode: ";
-		successors[0]->print();
-		cout << " ";
-		printLabel();
-		cout << " ";
-		successors[1]->print();
-		cout << " identifiers: ";
-		for (unsigned i = 0; i < identifierList.size(); i++) {
-			identifierList[i]->print();
-			cout << " ";
-		}
-	}
+	virtual void print() const;
 
 	virtual int hashCode() const;
 
-	bool operator==(const OperatorNode &other) const {
-		if (label == other.label) {
-
-			if (successors.size() != other.successors.size())
-				return false;
-
-			for(Node *i : successors) {
-				if (find(other.successors.begin(), other.successors.end(), i) == other.successors.end()) {
-					return false;
-				}
-			}
-
-			if (predecessors.size() != other.predecessors.size())
-					return false;
-
-			for(Node *i : predecessors) {
-				if (find(other.predecessors.begin(), other.predecessors.end(), i) == other.predecessors.end()) {
-					return false;
-				}
-			}
-
-			return true;
-		}
-		return false;
-	}
+	bool operator==(const OperatorNode &other) const;
 
 	void addIdentifier(LocalVariable *localVariable) {
 		identifierList.push_back(localVariable);
 	}
 
-	void removeIdentifier (LocalVariable *localVariable) {
-		vector<LocalVariable *>::iterator position = std::find(identifierList.begin(), identifierList.end(), localVariable);
-		if (position != identifierList.end())
-			identifierList.erase(position);
-	}
-
+	void removeIdentifier (LocalVariable *localVariable);
 };
 
 // Defines a DAG leaf Node
@@ -148,8 +86,8 @@ public:
 		addPredecessor(parent);
 	}
 
-	virtual void print() {
-		cout << "Leaf Node[";
+	virtual void print() const{
+		cout << "Leaf Node @" << this << "[";
 		leaf->print();
 		cout << "]";
 	}
@@ -162,25 +100,6 @@ public:
 
 	Instruction * getLeaf() { return leaf; }
 };
-
-// defines how to hash a Node object
-namespace std {
-
-  template <>
-  struct hash<Node>
-  {
-    std::size_t operator()(const Node& k) const
-    {
-      using std::size_t;
-      using std::hash;
-
-      // uses hashCode()
-
-      return ((hash<int>()(k.hashCode())));
-    }
-  };
-
-}
 
 // Defines a Direct Acyclic Graph (DAG)
 class DAG {

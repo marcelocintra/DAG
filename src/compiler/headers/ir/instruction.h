@@ -24,9 +24,6 @@ class Value {
 public:
 	virtual int valueNumber() const = 0;
 
-	bool operator==(const Value &other) const {
-		return valueNumber() == other.valueNumber();
-	}
 };
 
 class Integer: public Value {
@@ -38,6 +35,10 @@ public:
 	virtual int valueNumber() const {
 		return value;
 	}
+
+	bool operator==(const Integer &other) const {
+			return valueNumber() == other.valueNumber();
+    }
 
 private:
 	int value;
@@ -59,7 +60,7 @@ public:
 			value(v), previous(p), next(n), substitute(0) {
 	}
 
-	Value *getValue() {
+	Value *getValue() const{
 		return value;
 	}
 
@@ -198,12 +199,12 @@ public:
 			Instruction(value, 0, 0) {
 	}
 
-	int valueNumber() {
+	int valueNumber() const {
 		return getValue()->valueNumber();
 	}
 
 	bool operator==(const Constant &other) const {
-		return value == other.value;
+		return valueNumber() == other.valueNumber();
 	}
 
 	virtual Operator getInstructionID() { return CONSTANT; }

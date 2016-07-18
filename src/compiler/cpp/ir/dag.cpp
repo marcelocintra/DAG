@@ -5,6 +5,29 @@
 
 using namespace std;
 
+void Node::printLabel() const {
+	switch (label) {
+	case CONSTANT:
+		cout << "CONSTANT";
+		break;
+	case LOCALVARIABLE:
+		cout << "LOCALVARIABLE";
+		break;
+	case MUL:
+		cout << "MUL";
+		break;
+	case ADD:
+		cout << "ADD";
+		break;
+	case MOVE:
+		cout << "MOVE";
+		break;
+	default:
+		cout << "INVALID";
+		break;
+	}
+}
+
 int OperatorNode::hashCode() const {
 	int hash = label;
 	for(Node *i : successors) {
@@ -12,6 +35,55 @@ int OperatorNode::hashCode() const {
 	}
 	return hash;
 }
+
+void OperatorNode::print() const{
+	cout << "OperatorNode @" << this << ": ";
+	cout << "@"<< successors[0];//->print();
+	cout << " ";
+	printLabel();
+	cout << " ";
+	cout << "@" << successors[1]; //->print();
+	cout << " identifiers: ";
+	for (unsigned i = 0; i < identifierList.size(); i++) {
+		identifierList[i]->print();
+		cout << " ";
+	}
+}
+
+bool OperatorNode::operator==(const OperatorNode &other) const {
+	if (label == other.label) {
+
+		if (successors.size() != other.successors.size())
+			return false;
+
+		for (Node *i : successors) {
+			if (find(other.successors.begin(), other.successors.end(), i)
+					== other.successors.end()) {
+				return false;
+			}
+		}
+
+		if (predecessors.size() != other.predecessors.size())
+			return false;
+
+		for (Node *i : predecessors) {
+			if (find(other.predecessors.begin(), other.predecessors.end(), i)
+					== other.predecessors.end()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	return false;
+}
+
+void OperatorNode::removeIdentifier (LocalVariable *localVariable) {
+	vector<LocalVariable *>::iterator position = std::find(identifierList.begin(), identifierList.end(), localVariable);
+	if (position != identifierList.end())
+		identifierList.erase(position);
+}
+
 
 int LeafNode::hashCode() const {
 	return leaf->hashCode();
@@ -249,13 +321,6 @@ Node * DAG::addNode(Constant *c) {
 }
 
 Node * DAG::addNode(LocalVariable *variable) {
-//	DAGNodes variableNodes = operatorArray[variable->getInstructionID()];
-//	for (unsigned i = 0; i < variableNodes.size(); ++i) {
-//		LocalVariable *variableI = (LocalVariable*) (((LeafNode *)variableNodes[i])->getLeaf());
-//		if (variable == variableI) {
-//			return variableNodes[i];
-//		}
-//	}
 	Node *leafNode = identifierMapper[variable];
 
 	if (leafNode == 0) {
