@@ -19,6 +19,16 @@ public:
 	BasicBlock(Instruction *first, Instruction *last) :
 			firstInstruction(first), lastInstruction(last) {
 	}
+
+	~BasicBlock() {
+		auto *instructionIter = firstInstruction;
+		while (instructionIter) {
+			auto *next = instructionIter->getNext();
+			delete instructionIter;
+			instructionIter = next;
+		}
+	}
+
 	void setFirst(Instruction *f) {
 		firstInstruction = f;
 	}

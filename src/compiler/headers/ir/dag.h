@@ -112,6 +112,8 @@ public:
 	DAG (BasicBlock *basicBlock);
 	DAG (): DAG(0) { }
 
+	~DAG();
+
 	// Add a three address instruction to the DAG
 	void addThreeAddressInstruction(Instruction *instruction);
 

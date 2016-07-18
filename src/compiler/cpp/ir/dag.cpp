@@ -335,6 +335,12 @@ const DAG::DAGNodes& DAG::getDAGNodes() const {
 	return vertices;
 }
 
+DAG::~DAG() {
+	for (auto *node : vertices) {
+		delete node;
+	}
+}
+
 void DAG::print() const {
 	cout << endl << endl << "DAG: " << endl;
 	for(Node *node : vertices) {

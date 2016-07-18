@@ -92,7 +92,8 @@ int main(int argc, char** argv) {
 	DAG * dag = new DAG(codeSnippetBasicBlock);
 	// So far the DAG is only doing common subexpression elimination
 	// also, dead code elimination is done, just need to do a topological
-	// sorting and remove nodes with no identifiers.
+	// sorting and remove nodes with no identifiers & no references.
+	// TODO: Add code to determine the live in/ live out sets. Test more.
 	dag->print();
 
 }

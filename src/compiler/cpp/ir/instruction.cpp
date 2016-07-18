@@ -12,6 +12,10 @@ Instruction * Instruction::resolve() {
 	return p;
 }
 
+BinaryInstruction::~BinaryInstruction() {
+	// operands are deleted from the basic block instruction list
+}
+
 void BinaryInstruction::visitOperands(OperandVisitor &v) {
 	v.visitOperand(*operand0);
 	v.visitOperand(*operand1);

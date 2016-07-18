@@ -111,6 +111,8 @@ public:
 			op(opr), operand0(oper0), operand1(oper1), Instruction(value, 0, 0) {
 	}
 
+	~BinaryInstruction();
+
 	Instruction * getOperand0() {
 		return operand0->resolve();
 	}
