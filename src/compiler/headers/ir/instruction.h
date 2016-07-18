@@ -9,7 +9,7 @@ using namespace std;
 // These are the operators for our instruction set
 // I'm only defining what I need for the code exercise
 typedef enum {
-	ADD, MUL, ASSIGNMENT, PRINT, CALL, RETURN
+	ADD, MUL, MOVE, PRINT, CALL, RETURN, CONSTANT, LOCALVARIABLE, NUMBER_OF_OPERATORS
 } Operator;
 
 // define the data types
@@ -94,6 +94,7 @@ public:
 	// virtual functions for instruction and operand visitors
 	virtual void print() = 0;
 	virtual void accept(InstructionVisitor &v) = 0;
+	virtual Operator getInstructionID() = 0;
 	virtual void visitOperands(OperandVisitor &v) = 0;
 	virtual int hashCode() const = 0 ;
 };
@@ -123,9 +124,13 @@ public:
 		this->operand0 = operand;
 	}
 
+	Instruction *getFirstOperand() { return operand0; }
+
 	Instruction * getOperand1() {
 		return operand1->resolve();
 	}
+
+	Instruction *getSecondOperand() { return operand1; }
 
 	void setOperand1(Instruction *operand) {
 		this->operand1 = operand;
@@ -145,7 +150,6 @@ public:
 class Add: public BinaryInstruction {
 private:
 
-
 public:
 	Add(Value *value, Instruction *operand0, Instruction *operand1) :
 			BinaryInstruction(ADD, value, operand0, operand1) {
@@ -154,6 +158,8 @@ public:
 	Add(Instruction *operand0, Instruction *operand1) :
 			BinaryInstruction(ADD, 0, operand0, operand1) {
 	}
+
+	virtual Operator getInstructionID() { return ADD; }
 
 	virtual void accept(InstructionVisitor &v);
 	virtual void print() {
@@ -175,6 +181,8 @@ public:
 			BinaryInstruction(MUL, 0, operand0, operand1) {
 	}
 
+	virtual Operator getInstructionID() { return MUL; }
+
 	virtual void accept(InstructionVisitor &v);
 	virtual void print() {
 		cout << " MUL ";
@@ -183,7 +191,7 @@ public:
 	}
 };
 
-// Defines a instruction to represent an instruction
+// Defines a instruction to represent a constant
 class Constant: public Instruction {
 public:
 	Constant(Value *value) :
@@ -198,11 +206,13 @@ public:
 		return value == other.value;
 	}
 
+	virtual Operator getInstructionID() { return CONSTANT; }
+
 	virtual void visitOperands(OperandVisitor &v);
 	virtual void accept(InstructionVisitor &v);
 	virtual int hashCode() const;
 	virtual void print() {
-		cout << " CONSTANT " << value->valueNumber() << " ";
+		cout << " CONSTANT(" << value->valueNumber() << ")";
 	}
 };
 
@@ -226,6 +236,8 @@ public:
 	bool operator==(const LocalVariable &other) const {
 		return value == other.value;
 	}
+
+	virtual Operator getInstructionID() { return LOCALVARIABLE; }
 
 	virtual void accept(InstructionVisitor &v);
 	virtual void visitOperands(OperandVisitor &v);
@@ -252,7 +264,7 @@ public:
 		return rightValue->resolve();
 	}
 
-	void setRValue(Instruction *rValue) {
+	void setRightValue(Instruction *rValue) {
 		rightValue = rValue;
 	}
 
@@ -268,6 +280,8 @@ public:
 		return rightValue == other.rightValue &&
 				variable == other.variable;
 	}
+
+	virtual Operator getInstructionID() { return MOVE; }
 
 	virtual void visitOperands(OperandVisitor &v);
 	virtual void accept(InstructionVisitor &v);
@@ -322,7 +336,7 @@ public:
 	}
 };
 
-// defines how to hash a Instruction object
+// defines how to compute the hash for the Instruction class
 namespace std {
 
   template <>

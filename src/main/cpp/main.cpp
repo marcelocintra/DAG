@@ -89,5 +89,8 @@ int main(int argc, char** argv) {
 		instructionIter = instructionIter->getNext();
 	}
 
+	DAG * dag = new DAG(codeSnippetBasicBlock);
+	dag->print();
+
 	// i11: return 0;
 }
