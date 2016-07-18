@@ -233,7 +233,7 @@ Node * DAG::searchNode(Operator op, Node *left, Node *right) {
 	vector<Node *>  lpredecessors = left->getPredecessors();
 
 	// get  predecessor nodes for right Node;
-	vector<Node *>  rpredecessors = left->getPredecessors();
+	vector<Node *>  rpredecessors = right->getPredecessors();
 
 	// search a common predecessor node
 	for (unsigned i = 0; i < lpredecessors.size(); i++) {
