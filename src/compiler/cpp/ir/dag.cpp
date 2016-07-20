@@ -241,7 +241,9 @@ Node * DAG::searchNode(Operator op, Node *left, Node *right) {
 		if (lpredecessor->getLabel() == op) {
 			for (unsigned j = 0; j < rpredecessors.size(); j++) {
 				Node *rpredecessor = rpredecessors[i];
-				if (lpredecessor == rpredecessor) {
+				if (lpredecessor == rpredecessor &&
+						(op == MUL || op == ADD || // for add and multiply does not matter the order
+					    (i == 0 && j == 1))) {
 					// node (left op right) already exists, return it
 					return lpredecessor;
 				}
